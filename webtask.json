@@ -1,0 +1,11 @@
+{
+  "title": "My Application",
+  "name": "my-application",
+  "version": "1.0.0",
+  "author": "wt-gallery",
+  "description": "Text describing your application",
+  "type": "application",
+  "keywords": [
+    "auth0"
+  ]
+}

@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    block title
+      title My Application
+    meta(charset='UTF-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=Edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='description', content='#{description}')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='shortcut icon', href='https://cdn.auth0.com/styleguide/2.0.1/lib/logos/img/favicon.png')
+    link(rel='apple-touch-icon', href='apple-touch-icon.png')
+
+    link(rel='stylesheet', type='text/css', href='https://cdn.auth0.com/manage/v0.3.973/css/index.min.css')
+    link(rel='stylesheet', type='text/css', href="https://cdn.auth0.com/styleguide/latest/index.css")
+
+  body.a0-extension
+
+    .container
+      .row
+        section.content-page.current
+          .col-xs-12
+            #my-application
+              block content
