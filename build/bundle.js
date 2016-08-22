@@ -1,4 +1,4 @@
-module.exports =
+module.exports = 
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -43,201 +43,31 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/*!********************!*\
-  !*** ./webtask.js ***!
-  \********************/
+/*!*******************!*\
+  !*** ./server.js ***!
+  \*******************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Webtask = __webpack_require__(/*! webtask-tools */ 2);
+	var App = __webpack_require__(/*! ./ */ 2);
 	
-	// This is the entry-point for the Webpack build. We need to convert our module
-	// (which is a simple Express server) into a Webtask-compatible function.
-	module.exports = Webtask.fromExpress(__webpack_require__(/*! ./index.js */ 5));
+	var port = process.env.PORT || 3000;
+	
+	App.listen(port, function () {
+	    console.log('Server started on port', port);
+	})
 
 
 /***/ },
 /* 1 */,
 /* 2 */
-/*!**********************************!*\
-  !*** ./~/webtask-tools/index.js ***!
-  \**********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	exports.fromConnect = exports.fromExpress = fromConnect;
-	exports.fromHapi = fromHapi;
-	exports.fromServer = exports.fromRestify = fromServer;
-	
-	
-	// API functions
-	
-	function fromConnect (connectFn) {
-	    return function (context, req, res) {
-	        var normalizeRouteRx = createRouteNormalizationRx(req.x_wt.jtn);
-	
-	        req.originalUrl = req.url;
-	        req.url = req.url.replace(normalizeRouteRx, '/');
-	        req.webtaskContext = attachStorageHelpers(context);
-	
-	        return connectFn(req, res);
-	    };
-	}
-	
-	function fromHapi(server) {
-	    var webtaskContext;
-	
-	    server.ext('onRequest', function (request, response) {
-	        var normalizeRouteRx = createRouteNormalizationRx(request.x_wt.jtn);
-	
-	        request.setUrl(request.url.replace(normalizeRouteRx, '/'));
-	        request.webtaskContext = webtaskContext;
-	    });
-	
-	    return function (context, req, res) {
-	        var dispatchFn = server._dispatch();
-	
-	        webtaskContext = attachStorageHelpers(context);
-	
-	        dispatchFn(req, res);
-	    };
-	}
-	
-	function fromServer(httpServer) {
-	    return function (context, req, res) {
-	        var normalizeRouteRx = createRouteNormalizationRx(req.x_wt.jtn);
-	
-	        req.originalUrl = req.url;
-	        req.url = req.url.replace(normalizeRouteRx, '/');
-	        req.webtaskContext = attachStorageHelpers(context);
-	
-	        return httpServer.emit('request', req, res);
-	    };
-	}
-	
-	
-	// Helper functions
-	
-	function createRouteNormalizationRx(jtn) {
-	    var normalizeRouteBase = '^\/api\/run\/[^\/]+\/';
-	    var normalizeNamedRoute = '(?:[^\/\?#]*\/?)?';
-	
-	    return new RegExp(
-	        normalizeRouteBase + (
-	        jtn
-	            ?   normalizeNamedRoute
-	            :   ''
-	    ));
-	}
-	
-	function attachStorageHelpers(context) {
-	    context.read = context.secrets.EXT_STORAGE_URL
-	        ?   readFromPath
-	        :   readNotAvailable;
-	    context.write = context.secrets.EXT_STORAGE_URL
-	        ?   writeToPath
-	        :   writeNotAvailable;
-	
-	    return context;
-	
-	
-	    function readNotAvailable(path, options, cb) {
-	        var Boom = __webpack_require__(/*! boom */ 3);
-	
-	        if (typeof options === 'function') {
-	            cb = options;
-	            options = {};
-	        }
-	
-	        cb(Boom.preconditionFailed('Storage is not available in this context'));
-	    }
-	
-	    function readFromPath(path, options, cb) {
-	        var Boom = __webpack_require__(/*! boom */ 3);
-	        var Request = __webpack_require__(/*! request */ 4);
-	
-	        if (typeof options === 'function') {
-	            cb = options;
-	            options = {};
-	        }
-	
-	        Request({
-	            uri: context.secrets.EXT_STORAGE_URL,
-	            method: 'GET',
-	            headers: options.headers || {},
-	            qs: { path: path },
-	            json: true,
-	        }, function (err, res, body) {
-	            if (err) return cb(Boom.wrap(err, 502));
-	            if (res.statusCode === 404 && Object.hasOwnProperty.call(options, 'defaultValue')) return cb(null, options.defaultValue);
-	            if (res.statusCode >= 400) return cb(Boom.create(res.statusCode, body && body.message));
-	
-	            cb(null, body);
-	        });
-	    }
-	
-	    function writeNotAvailable(path, data, options, cb) {
-	        var Boom = __webpack_require__(/*! boom */ 3);
-	
-	        if (typeof options === 'function') {
-	            cb = options;
-	            options = {};
-	        }
-	
-	        cb(Boom.preconditionFailed('Storage is not available in this context'));
-	    }
-	
-	    function writeToPath(path, data, options, cb) {
-	        var Boom = __webpack_require__(/*! boom */ 3);
-	        var Request = __webpack_require__(/*! request */ 4);
-	
-	        if (typeof options === 'function') {
-	            cb = options;
-	            options = {};
-	        }
-	
-	        Request({
-	            uri: context.secrets.EXT_STORAGE_URL,
-	            method: 'PUT',
-	            headers: options.headers || {},
-	            qs: { path: path },
-	            body: data,
-	        }, function (err, res, body) {
-	            if (err) return cb(Boom.wrap(err, 502));
-	            if (res.statusCode >= 400) return cb(Boom.create(res.statusCode, body && body.message));
-	
-	            cb(null);
-	        });
-	    }
-	}
-
-
-/***/ },
-/* 3 */
-/*!***********************!*\
-  !*** external "boom" ***!
-  \***********************/
-/***/ function(module, exports) {
-
-	module.exports = require("boom");
-
-/***/ },
-/* 4 */
-/*!**************************!*\
-  !*** external "request" ***!
-  \**************************/
-/***/ function(module, exports) {
-
-	module.exports = require("request");
-
-/***/ },
-/* 5 */
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var express  = __webpack_require__(/*! express */ 6);
+	var express  = __webpack_require__(/*! express */ 3);
 	var app      = express();
-	var template = __webpack_require__(/*! ./views/index.jade */ 7);
+	var template = __webpack_require__(/*! ./views/index.jade */ 4);
 	
 	app.get('/', function (req, res) {
 	  res.header("Content-Type", 'text/html');
@@ -248,7 +78,7 @@ module.exports =
 
 
 /***/ },
-/* 6 */
+/* 3 */
 /*!**************************!*\
   !*** external "express" ***!
   \**************************/
@@ -257,13 +87,13 @@ module.exports =
 	module.exports = require("express");
 
 /***/ },
-/* 7 */
+/* 4 */
 /*!**************************!*\
   !*** ./views/index.jade ***!
   \**************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var jade = __webpack_require__(/*! ./~/jade/lib/runtime.js */ 8);
+	var jade = __webpack_require__(/*! ./~/jade/lib/runtime.js */ 5);
 	
 	module.exports = function template(locals) {
 	var jade_debug = [ new jade.DebugItem( 1, "/Users/peter/projects/auth0-extensions/auth0-scim-extension/views/index.jade" ) ];
@@ -346,10 +176,28 @@ module.exports =
 	buf.push("<h1>");
 	jade_debug.unshift(new jade.DebugItem( undefined, jade_debug[0].filename ));
 	jade_debug.unshift(new jade.DebugItem( 7, jade_debug[0].filename ));
-	buf.push("Hello world!");
+	buf.push("Welcome to SCIM!");
 	jade_debug.shift();
 	jade_debug.shift();
 	buf.push("</h1>");
+	jade_debug.shift();
+	jade_debug.unshift(new jade.DebugItem( 8, "/Users/peter/projects/auth0-extensions/auth0-scim-extension/views/index.jade" ));
+	buf.push("<p>");
+	jade_debug.unshift(new jade.DebugItem( undefined, jade_debug[0].filename ));
+	jade_debug.unshift(new jade.DebugItem( 8, jade_debug[0].filename ));
+	buf.push("The base URL is:");
+	jade_debug.shift();
+	jade_debug.unshift(new jade.DebugItem( 9, "/Users/peter/projects/auth0-extensions/auth0-scim-extension/views/index.jade" ));
+	buf.push("<a href=\"scim\">");
+	jade_debug.unshift(new jade.DebugItem( undefined, jade_debug[0].filename ));
+	jade_debug.unshift(new jade.DebugItem( 9, jade_debug[0].filename ));
+	buf.push("./scim");
+	jade_debug.shift();
+	jade_debug.shift();
+	buf.push("</a>");
+	jade_debug.shift();
+	jade_debug.shift();
+	buf.push("</p>");
 	jade_debug.shift();
 	jade_debug.shift();
 	jade_debug.shift();
@@ -375,12 +223,12 @@ module.exports =
 	jade_debug.shift();
 	jade_debug.shift();}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined));;return buf.join("");
 	} catch (err) {
-	  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "extends ./layout.jade\n\nblock title\n  title My Application\n\nblock content\n  h1 Hello world!\n");
+	  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "extends ./layout.jade\n\nblock title\n  title My Application\n\nblock content\n  h1 Welcome to SCIM!\n  p The base URL is:\n    a(href=\"scim\") ./scim\n");
 	}
 	}
 
 /***/ },
-/* 8 */
+/* 5 */
 /*!*******************************!*\
   !*** ./~/jade/lib/runtime.js ***!
   \*******************************/
@@ -594,7 +442,7 @@ module.exports =
 	    throw err;
 	  }
 	  try {
-	    str = str || __webpack_require__(/*! fs */ 9).readFileSync(filename, 'utf8')
+	    str = str || __webpack_require__(/*! fs */ 6).readFileSync(filename, 'utf8')
 	  } catch (ex) {
 	    rethrow(err, null, lineno)
 	  }
@@ -626,7 +474,7 @@ module.exports =
 
 
 /***/ },
-/* 9 */
+/* 6 */
 /*!*********************!*\
   !*** external "fs" ***!
   \*********************/
