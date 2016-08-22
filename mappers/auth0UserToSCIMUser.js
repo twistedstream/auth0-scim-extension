@@ -18,7 +18,10 @@ function mapUser(auth0User) {
     title: null, // TODO
     timezone: null, // TODO
     active: true, // TODO
-    emails: [ auth0User.email ],
+    emails: [{
+      value: auth0User.email,
+      primary: true
+    }],
     photos: [{
       value: auth0User.picture,
       type: 'photo'
