@@ -10,6 +10,6 @@ module.exports = Webtask.fromExpress((req, res) => {
     });
 
   // Start the server.
-  const app = require('./index')();
+  const app = require('./index');
   return app(req, res);
 });
