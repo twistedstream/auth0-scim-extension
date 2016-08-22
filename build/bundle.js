@@ -92,10 +92,13 @@ module.exports =
 	app.get('/users', function (req, res) {
 	  management.users.getAll()
 	    .then(users => {
-	
-	console.log(users);
-	
-	      res.json(users.map(auth0ToScim.map));
+	      res.json({
+	        totalResults: users.length,
+	        itemsPerPage: 2,
+	        startIndex: 1,
+	        schemas: ['urn:scim:schemas:core:1.0'],
+	        Resources: users.map(auth0ToScim.map)
+	      });
 	    })
 	    .catch(error => {
 	      res.json(error);
