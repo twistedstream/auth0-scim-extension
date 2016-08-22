@@ -8,5 +8,11 @@
   "keywords": [
     "auth0",
     "scim"
-  ]
+  ],
+  "secrets: {
+    "AUTH0_APIV2_TOKEN": {
+      "description": "The API v2 token for interacting with API v2. Requires the following scopes: create:users read:users update:users delete:users create:user_tickets",
+      "type": "password"
+    }
+  }
 }
