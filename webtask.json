@@ -1,11 +1,12 @@
 {
-  "title": "My Application",
-  "name": "my-application",
+  "title": "SCIM API for User Management",
+  "name": "auth0-scim-extension",
   "version": "1.0.0",
-  "author": "wt-gallery",
-  "description": "Text describing your application",
+  "author": "auth0",
+  "description": "Enables a SCIM API in front of Auth0 for user management",
   "type": "application",
   "keywords": [
-    "auth0"
+    "auth0",
+    "scim"
   ]
 }
